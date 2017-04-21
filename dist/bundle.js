@@ -32288,7 +32288,11 @@ var rectangleBtn = document.getElementsByClassName('rectangle')[0];
 var lineBtn = document.getElementsByClassName('line')[0];
 var starBtn = document.getElementsByClassName('star')[0];
 
+var polylineBtn = document.getElementsByClassName('polyline')[0];
+var polylineInput = document.getElementsByClassName('polyline-input')[0];
 var moveBtn = document.getElementsByClassName('move')[0];
+
+var defaultInputValue = polylineInput.value;
 
 var clearCanvas = function clearCanvas() {
     canvas.clear();
@@ -32301,6 +32305,14 @@ clearCanvas();
 var currentFigure = circleBtn;
 currentFigure.classList.add(figureBtnActiveClass);
 var move = false;
+
+polylineInput.addEventListener('change', function () {
+    var value = polylineInput.value;
+    if (value < 2 || value > 50) {
+        alert('Only from 2 to 50');
+        polylineInput.value = 5;
+    }
+});
 
 // Draw figure handlers: START
 circleBtn.draw = function (x, y) {
@@ -32327,6 +32339,7 @@ rectangleBtn.draw = function (x, y) {
     canvas.add(rect);
 };
 
+// Line
 var line = void 0;
 var isDown = void 0;
 canvas.on('mouse:down', function (o) {
@@ -32357,6 +32370,10 @@ canvas.on('mouse:up', function (o) {
     isDown = false;
 });
 
+lineBtn.draw = function (x, y) {
+    console.log('line: ' + x + ' ' + y);
+};
+
 starBtn.draw = function (x, y) {
     var spikes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5;
     var or = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 30;
@@ -32385,7 +32402,7 @@ starBtn.draw = function (x, y) {
     });
 
     var star = new f.Polygon(points, {
-        stroke: 'red',
+        stroke: 'blue',
         left: x,
         top: y,
         strokeWidth: 2,
@@ -32394,18 +32411,52 @@ starBtn.draw = function (x, y) {
     canvas.add(star);
 };
 
-lineBtn.draw = function (x, y) {
-    console.log('line: ' + x + ' ' + y);
+canvas.on('mouse:down', function (o) {
+    if (currentFigure != polylineBtn || move) return;
+    if (polylineInput.value == 0) {
+        polylineInput.value = defaultInputValue;
+        switchTo(circleBtn);
+        canvas.on('mouse:down', canvasClicker);
+    } else {
+        polylineInput.value -= 1;
+        var pointer = canvas.getPointer(o.e);
+        var origX = pointer.x;
+        var origY = pointer.y;
+        var circle = new f.Circle({
+            left: pointer.x,
+            top: pointer.y,
+            radius: 1,
+            strokeWidth: 1,
+            stroke: 'black',
+            fill: 'white',
+            selectable: true,
+            originX: 'center', originY: 'center'
+        });
+        canvas.add(circle);
+    }
+});
+// Polyline
+polylineBtn.draw = function (x, y) {
+    console.log('polyline: ' + x + ' ' + y);
+    defaultInputValue = polylineInput.value;
+    canvas.off('mouse:down', canvasClicker);
 };
+
 // Draw figure handlers: END
+
+var switchTo = function switchTo(el) {
+    console.log(el);
+    console.log(currentFigure);
+    currentFigure.classList.remove(figureBtnActiveClass);
+    currentFigure = el;
+    currentFigure.classList.add(figureBtnActiveClass);
+    move = false;
+    moveBtn.classList.remove(figureBtnActiveClass);
+};
 
 Array.from(figureBtns.children).forEach(function (child) {
     child.addEventListener('click', function () {
-        currentFigure.classList.remove(figureBtnActiveClass);
-        currentFigure = child;
-        currentFigure.classList.add(figureBtnActiveClass);
-        move = false;
-        moveBtn.classList.remove(figureBtnActiveClass);
+        switchTo(child);
     });
 });
 
@@ -32419,13 +32470,15 @@ moveBtn.addEventListener('click', function () {
     moveBtn.classList.add(figureBtnActiveClass);
 });
 
-canvas.on('mouse:down', function (_ref) {
+var canvasClicker = function canvasClicker(_ref) {
     var e = _ref.e;
 
     if (move) return;
     var coordinates = canvas.getPointer(e);
     currentFigure.draw(coordinates.x, coordinates.y);
-});
+};
+
+canvas.on('mouse:down', canvasClicker);
 
 /***/ }),
 /* 21 */
