@@ -1,4 +1,3 @@
-import paper from "paper"
 import fabric from "fabric"
 const f = fabric.fabric
 
@@ -92,7 +91,6 @@ Array.from(figureBtns.children).forEach(child => {
         currentFigure.classList.add(figureBtnActiveClass)
         move = false
         moveBtn.classList.remove(figureBtnActiveClass)
-        console.log(moveBtn)
     })
 })
 
