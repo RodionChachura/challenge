@@ -32286,6 +32286,8 @@ var clearBtn = document.getElementsByClassName('clear')[0];
 var circleBtn = document.getElementsByClassName('circle')[0];
 var rectangleBtn = document.getElementsByClassName('rectangle')[0];
 var lineBtn = document.getElementsByClassName('line')[0];
+var starBtn = document.getElementsByClassName('star')[0];
+
 var moveBtn = document.getElementsByClassName('move')[0];
 
 var clearCanvas = function clearCanvas() {
@@ -32300,7 +32302,7 @@ var currentFigure = circleBtn;
 currentFigure.classList.add(figureBtnActiveClass);
 var move = false;
 
-// Draw figure handlers
+// Draw figure handlers: START
 circleBtn.draw = function (x, y) {
     console.log('circle: ' + x + ' ' + y);
     var circle = new f.Circle({
@@ -32355,9 +32357,47 @@ canvas.on('mouse:up', function (o) {
     isDown = false;
 });
 
+starBtn.draw = function (x, y) {
+    var spikes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5;
+    var or = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 30;
+    var ir = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 60;
+
+    console.log('star: ' + x + ' ' + y);
+    var rot = Math.PI / 2 * spikes;
+    var cx = or;
+    var cy = or;
+    var sweep = Math.PI / spikes;
+    var points = [];
+    var angle = 0;
+
+    Array(5).fill().map(function (_, i) {
+        return i * i;
+    }).forEach(function (el) {
+        var x = cx + Math.cos(angle) * or;
+        var y = cy + Math.sin(angle) * or;
+        points.push({ x: x, y: y });
+        angle += sweep;
+
+        x = cx + Math.cos(angle) * ir;
+        y = cy + Math.sin(angle) * ir;
+        points.push({ x: x, y: y });
+        angle += sweep;
+    });
+
+    var star = new f.Polygon(points, {
+        stroke: 'red',
+        left: x,
+        top: y,
+        strokeWidth: 2,
+        strokeLineJoin: 'bevil'
+    }, false);
+    canvas.add(star);
+};
+
 lineBtn.draw = function (x, y) {
     console.log('line: ' + x + ' ' + y);
 };
+// Draw figure handlers: END
 
 Array.from(figureBtns.children).forEach(function (child) {
     child.addEventListener('click', function () {

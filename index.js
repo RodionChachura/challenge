@@ -10,6 +10,9 @@ const clearBtn = document.getElementsByClassName('clear')[0]
 const circleBtn = document.getElementsByClassName('circle')[0]
 const rectangleBtn = document.getElementsByClassName('rectangle')[0]
 const lineBtn = document.getElementsByClassName('line')[0]
+const starBtn = document.getElementsByClassName('star')[0]
+
+
 const moveBtn = document.getElementsByClassName('move')[0]
 
 const clearCanvas = () => {
@@ -24,7 +27,7 @@ let currentFigure = circleBtn
 currentFigure.classList.add(figureBtnActiveClass)
 let move = false
 
-// Draw figure handlers
+// Draw figure handlers: START
 circleBtn.draw = (x, y) => {
     console.log(`circle: ${x} ${y}`)
     const circle = new f.Circle({
@@ -79,10 +82,41 @@ canvas.on('mouse:up', (o) => {
     isDown = false;
 });
 
+starBtn.draw = (x, y, spikes=5, or=30, ir=60) => {
+    console.log(`star: ${x} ${y}`)
+    const rot = Math.PI / 2 * spikes
+    const cx = or
+    const cy = or
+    const sweep = Math.PI / spikes
+    const points = []
+    let angle = 0
+
+    Array(5).fill().map((_, i) => i * i).forEach((el) => {
+        let x = cx + Math.cos(angle) * or
+        let y = cy + Math.sin(angle) * or
+        points.push({x, y})
+        angle += sweep
+        
+        x = cx + Math.cos(angle) * ir
+        y = cy + Math.sin(angle) * ir
+        points.push({x, y})
+        angle += sweep
+    })
+
+    const star = new f.Polygon(points, {
+        stroke: 'blue',
+        left: x,
+        top: y,
+        strokeWidth: 2,
+        strokeLineJoin: 'bevil'
+    }, false)
+    canvas.add(star)
+}
 
 lineBtn.draw = (x, y) => {
     console.log(`line: ${x} ${y}`)
 }
+// Draw figure handlers: END
 
 Array.from(figureBtns.children).forEach(child => {
     child.addEventListener('click', () => {
@@ -109,5 +143,3 @@ canvas.on('mouse:down', ({e}) => {
     const coordinates = canvas.getPointer(e)
     currentFigure.draw(coordinates.x, coordinates.y)
 })
-
-
