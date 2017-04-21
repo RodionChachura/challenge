@@ -142,6 +142,7 @@ canvas.on('mouse:down', (o) => {
     } else {
         polylineInput.value -= 1
         const pointer = canvas.getPointer(o.e);
+        polilinePoints.push(pointer)
         const origX = pointer.x;
         const origY = pointer.y;
         const circle = new f.Circle({
@@ -160,12 +161,29 @@ canvas.on('mouse:down', (o) => {
 // Polyline
 polylineBtn.draw = (x, y) => {
     console.log(`polyline: ${x} ${y}`)
-    defaultInputValue = polylineInput.value
+    defaultInputValue = polylineInput.value + 1
     canvas.off('mouse:down', canvasClicker)
 }
 
 const finallyDrawPolygon = (points) => {
+    polilinePoints.forEach((p, i) => {
+        let nextP;
+        if (i < polilinePoints.length - 1) {
+            nextP = polilinePoints[i + 1]
+        } else {
+            nextP = polilinePoints[0]
+        }
 
+        const line = new f.Line([p.x, p.y, nextP.x, nextP.y], {
+            strokeWidth: 5,
+            fill: 'red',
+            stroke: 'red',
+            originX: 'center',
+            originY: 'center'
+        })
+        console.log(line)
+        canvas.add(line)
+    })
 }
 
 // Draw figure handlers: END

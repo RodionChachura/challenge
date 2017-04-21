@@ -32411,15 +32411,19 @@ starBtn.draw = function (x, y) {
     canvas.add(star);
 };
 
+var polilinePoints = [];
 canvas.on('mouse:down', function (o) {
     if (currentFigure != polylineBtn || move) return;
     if (polylineInput.value == 0) {
         polylineInput.value = defaultInputValue;
         switchTo(circleBtn);
         canvas.on('mouse:down', canvasClicker);
+        finallyDrawPolygon(polilinePoints);
+        polilinePoints = [];
     } else {
         polylineInput.value -= 1;
         var pointer = canvas.getPointer(o.e);
+        polilinePoints.push(pointer);
         var origX = pointer.x;
         var origY = pointer.y;
         var circle = new f.Circle({
@@ -32442,11 +32446,40 @@ polylineBtn.draw = function (x, y) {
     canvas.off('mouse:down', canvasClicker);
 };
 
+var finallyDrawPolygon = function finallyDrawPolygon(points) {
+    polilinePoints.forEach(function (p, i) {
+        var nextP = void 0;
+        if (i < polilinePoints.length - 1) {
+            nextP = polilinePoints[i + 1];
+        } else {
+            nextP = polilinePoints[0];
+        }
+        // console.log(p, nextP)
+
+        var line = new f.Line([p.x, p.y, nextP.x, nextP.y], {
+            strokeWidth: 5,
+            fill: 'red',
+            stroke: 'red',
+            originX: 'center',
+            originY: 'center'
+        });
+        console.log(line);
+        canvas.add(line);
+    });
+    // console.log(points)
+    // const polygon = new f.Polygon(points, {
+    //     fill: 'pink',
+    //     stroke:'blue',
+    //     top: points[0].x, 
+    //     left: points[0].y
+    // });
+
+    // canvas.add(polygon);
+};
+
 // Draw figure handlers: END
 
 var switchTo = function switchTo(el) {
-    console.log(el);
-    console.log(currentFigure);
     currentFigure.classList.remove(figureBtnActiveClass);
     currentFigure = el;
     currentFigure.classList.add(figureBtnActiveClass);
