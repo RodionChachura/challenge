@@ -32308,9 +32308,9 @@ var move = false;
 
 polylineInput.addEventListener('change', function () {
     var value = polylineInput.value;
-    if (value < 2 || value > 50) {
+    if (!Number.isInteger(value) || value < 2 || value > 50) {
         alert('Only from 2 to 50');
-        polylineInput.value = 5;
+        polylineInput.value = defaultInputValue;
     }
 });
 
@@ -32442,7 +32442,7 @@ canvas.on('mouse:down', function (o) {
 // Polyline
 polylineBtn.draw = function (x, y) {
     console.log('polyline: ' + x + ' ' + y);
-    defaultInputValue = polylineInput.value;
+    defaultInputValue = parseInt(polylineInput.value) + 1;
     canvas.off('mouse:down', canvasClicker);
 };
 
@@ -32454,7 +32454,6 @@ var finallyDrawPolygon = function finallyDrawPolygon(points) {
         } else {
             nextP = polilinePoints[0];
         }
-        // console.log(p, nextP)
 
         var line = new f.Line([p.x, p.y, nextP.x, nextP.y], {
             strokeWidth: 5,
@@ -32463,18 +32462,8 @@ var finallyDrawPolygon = function finallyDrawPolygon(points) {
             originX: 'center',
             originY: 'center'
         });
-        console.log(line);
         canvas.add(line);
     });
-    // console.log(points)
-    // const polygon = new f.Polygon(points, {
-    //     fill: 'pink',
-    //     stroke:'blue',
-    //     top: points[0].x, 
-    //     left: points[0].y
-    // });
-
-    // canvas.add(polygon);
 };
 
 // Draw figure handlers: END

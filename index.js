@@ -32,9 +32,9 @@ let move = false
 
 polylineInput.addEventListener('change', () => {
     let value = polylineInput.value
-    if (value < 2 || value > 50) {
+    if (!Number.isInteger(value) || value < 2 || value > 50) {
         alert('Only from 2 to 50')
-        polylineInput.value = 5
+        polylineInput.value = defaultInputValue
     }
 })
 
@@ -161,7 +161,7 @@ canvas.on('mouse:down', (o) => {
 // Polyline
 polylineBtn.draw = (x, y) => {
     console.log(`polyline: ${x} ${y}`)
-    defaultInputValue = polylineInput.value + 1
+    defaultInputValue = parseInt(polylineInput.value) + 1
     canvas.off('mouse:down', canvasClicker)
 }
 
@@ -181,7 +181,6 @@ const finallyDrawPolygon = (points) => {
             originX: 'center',
             originY: 'center'
         })
-        console.log(line)
         canvas.add(line)
     })
 }
